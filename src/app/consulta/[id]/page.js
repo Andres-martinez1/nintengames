@@ -67,11 +67,12 @@ export default function Consultar() {
       </div>
 
       <Image
-        src={juego.cover}
+        src={juego.cover ? `/uploads/${juego.cover}` : "/image.png"}
         alt={juego.title}
-        width={180}
-        height={180}
+        width={80}
+        height={80}
         className={styles.juegoImagen}
+        unoptimized
       />
 
       <div className={styles.inputGroup}>

@@ -1,124 +1,106 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/generated/prisma";
 import path from "path";
-import { writeFile } from "fs/promises";
+import fs from "fs";
 
 const prisma = new PrismaClient();
 
-export async function GET(req, props) {
-  const params = await props.params;
+export async function GET(_, { params }) {
   try {
-    const { id } = params;
-    console.log("ID recibido:", id, "Tipo:", typeof id);
-
-    if (!id || isNaN(Number(id))) {
-      return NextResponse.json(
-        { error: "ID inválido o no proporcionado" },
-        { status: 400 }
-      );
-    }
-
-    const juego = await prisma.games.findUnique({
-      where: { id: Number(id) },
+    const game = await prisma.games.findUnique({
+      where: { id: parseInt(params.id) },
+      include: {
+        platform: true,
+        category: true,
+      },
     });
 
-    if (!juego) {
-      return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+    if (!game) {
+      return NextResponse.json({ error: "Game not found" }, { status: 404 });
     }
 
-    return NextResponse.json(juego);
+    return NextResponse.json(game);
   } catch (error) {
-    console.error("Error en GET /api/games/[id]:", error);
-    return NextResponse.json(
-      { error: error.message || "Error interno del servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-export async function DELETE(req, props) {
-  const params = await props.params;
+export async function PUT(req, { params }) {
   try {
-    const { id } = params;
+    const id = parseInt(params.id);
+    const game = await prisma.games.findUnique({ where: { id } });
 
-    if (!id || isNaN(Number(id))) {
-      return NextResponse.json(
-        { error: "ID inválido o no proporcionado" },
-        { status: 400 }
-      );
-    }
-
-    const game = await prisma.games.delete({
-      where: { id: Number(id) },
-    });
-
-    return NextResponse.json({
-      mensaje: "Juego eliminado correctamente",
-      game,
-    });
-  } catch (error) {
-    console.error("Error en DELETE /api/games/[id]:", error);
-    return NextResponse.json(
-      { error: error.message || "Error interno" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PUT(req, props) {
-  const params = await props.params;
-  try {
-    const { id } = params;
-
-    if (!id || isNaN(Number(id))) {
-      return NextResponse.json(
-        { error: "ID inválido o no proporcionado" },
-        { status: 400 }
-      );
+    if (!game) {
+      return NextResponse.json({ error: "Game not found" }, { status: 404 });
     }
 
     const formData = await req.formData();
-    const data = {};
+    const title = formData.get("title");
+    const platform_id = parseInt(formData.get("platform_id"));
+    const category_id = parseInt(formData.get("category_id"));
+    const year = parseInt(formData.get("year"));
+    const version = formData.get("version") || null;
+    const file = formData.get("cover");
 
-    if (formData.has("title")) {
-      data.title = formData.get("title");
-    }
-    if (formData.has("platform_id")) {
-      data.platform_id = parseInt(formData.get("platform_id"));
-    }
-    if (formData.has("category_id")) {
-      data.category_id = parseInt(formData.get("category_id"));
-    }
-    if (formData.has("year")) {
-      data.year = parseInt(formData.get("year"));
-    }
-    if (formData.has("version")) {
-      data.year = parseInt(formData.get("version"));
-    }
-    if (formData.has("cover")) {
-      const coverFile = formData.get("cover");
-      if (coverFile && coverFile.name) {
-        const fileName = Date.now() + "_" + coverFile.name;
-        const filePath = path.join(
-          process.cwd(),
-          "public",
-          "uploads",
-          fileName
-        );
-        const bytes = await coverFile.arrayBuffer();
-        await writeFile(filePath, Buffer.from(bytes));
-        data.cover = `/uploads/${fileName}`;
+    let coverFilename = game.cover;
+
+    if (file && file.name) {
+      if (coverFilename) {
+        const oldPath = path.join(process.cwd(), "public", "uploads", coverFilename);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
       }
+
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const buffer = Buffer.from(await file.arrayBuffer());
+      coverFilename = `${Date.now()}-${file.name}`;
+      const filePath = path.join(uploadDir, coverFilename);
+      fs.writeFileSync(filePath, buffer);
     }
 
     const updatedGame = await prisma.games.update({
-      where: { id: Number(id) },
-      data,
+      where: { id },
+      data: {
+        title,
+        platform_id,
+        category_id,
+        year,
+        version,
+        cover: coverFilename,
+      },
     });
 
     return NextResponse.json(updatedGame);
   } catch (error) {
-    console.error("Error en PUT /api/games/[id]:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(_, { params }) {
+  try {
+    const id = parseInt(params.id);
+    const game = await prisma.games.findUnique({ where: { id } });
+
+    if (!game) {
+      return NextResponse.json({ error: "Game not found" }, { status: 404 });
+    }
+
+    if (game.cover) {
+      const coverPath = path.join(process.cwd(), "public", "uploads", game.cover);
+      if (fs.existsSync(coverPath)) {
+        fs.unlinkSync(coverPath);
+      }
+    }
+
+    await prisma.games.delete({ where: { id } });
+
+    return NextResponse.json({ message: "Game deleted successfully" });
+  } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

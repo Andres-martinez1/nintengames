@@ -32,7 +32,9 @@ export default function Dashboard() {
     platforms.find((p) => p.id === id)?.name || "Plataforma desconocida";
 
   const eliminarJuego = async (id) => {
-    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este juego?");
+    const confirmar = window.confirm(
+      "¿Estás seguro de que deseas eliminar este juego?"
+    );
     if (!confirmar) return;
 
     try {
@@ -48,7 +50,12 @@ export default function Dashboard() {
     <div className={styles.pageWrapper}>
       <div className={styles.topBar}>
         <h1 className={styles.titulo}>Administrar videoJuegos</h1>
-        <button className={styles.closeBtn} onClick={() => router.push("/login")}>✕</button>
+        <button
+          className={styles.closeBtn}
+          onClick={() => router.push("/login")}
+        >
+          ✕
+        </button>
       </div>
 
       <button
@@ -65,7 +72,7 @@ export default function Dashboard() {
           games.map((juego) => (
             <div key={juego.id} className={styles.juegoItem}>
               <Image
-                src={juego.cover || "/image.png"}
+                src={juego.cover ? `/uploads/${juego.cover}` : "/image.png"}
                 alt={juego.title}
                 width={80}
                 height={80}
@@ -92,14 +99,24 @@ export default function Dashboard() {
                   className={`${styles.iconButton} ${styles.editar}`}
                   onClick={() => router.push(`/modificar/${juego.id}`)}
                 >
-                  <Image src="/pencil.png" alt="Editar" width={16} height={16} />
+                  <Image
+                    src="/pencil.png"
+                    alt="Editar"
+                    width={16}
+                    height={16}
+                  />
                 </button>
 
                 <button
                   className={styles.eliminar}
                   onClick={() => eliminarJuego(juego.id)}
                 >
-                  <Image src="/delete.png" alt="Eliminar" width={25} height={20} />
+                  <Image
+                    src="/delete.png"
+                    alt="Eliminar"
+                    width={25}
+                    height={20}
+                  />
                 </button>
               </div>
             </div>

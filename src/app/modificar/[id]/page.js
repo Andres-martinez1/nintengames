@@ -21,8 +21,17 @@ export default function Modificar() {
     const fetchData = async () => {
       try {
         const { data } = await axios.get(`/api/games/${id}`);
-        setJuego(data);
-        setImagePreview(data.cover || "");
+        setJuego({
+          ...data,
+          cover: null,
+        });
+
+        if (data.cover) {
+          const coverUrl = data.cover.startsWith("http")
+            ? data.cover
+            : `/uploads/${data.cover}`;
+          setImagePreview(coverUrl);
+        }
       } catch (err) {
         console.error("Error al obtener videojuego:", err);
         alert("No se pudo cargar el videojuego.");
@@ -58,7 +67,12 @@ export default function Modificar() {
   const handleModificar = async (e) => {
     e.preventDefault();
 
-    if (!juego?.title || !juego?.platform_id || !juego?.category_id || !juego?.year) {
+    if (
+      !juego?.title ||
+      !juego?.platform_id ||
+      !juego?.category_id ||
+      !juego?.year
+    ) {
       alert("Todos los campos son obligatorios");
       return;
     }
@@ -69,7 +83,7 @@ export default function Modificar() {
       formData.append("platform_id", juego.platform_id);
       formData.append("category_id", juego.category_id);
       formData.append("year", juego.year);
-
+      if (juego.version) formData.append("version", juego.version);
       if (juego.cover instanceof File) {
         formData.append("cover", juego.cover);
       }
@@ -81,7 +95,10 @@ export default function Modificar() {
       alert("Juego modificado exitosamente");
       router.push("/dashboard");
     } catch (error) {
-      console.error("Error al modificar:", error.response?.data || error.message);
+      console.error(
+        "Error al modificar:",
+        error.response?.data || error.message
+      );
       alert("Error al modificar. Verifica consola.");
     }
   };
@@ -168,6 +185,15 @@ export default function Modificar() {
           value={juego.year || ""}
           onChange={handleInputChange}
           placeholder="Año de lanzamiento"
+        />
+
+        <input
+          className={styles.input}
+          name="version"
+          type="text"
+          value={juego.version || ""}
+          onChange={handleInputChange}
+          placeholder="Versión"
         />
 
         <button className={styles.boton} onClick={handleModificar}>

@@ -1,0 +1,674 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de Nintengames",
+        "version": "1.0.0",
+        "description": "Bienvenido a la API de Nintengames, una plataforma para gestionar usuarios, videojuegos, plataformas y categorías de forma eficiente.\n\n### Funcionalidades principales:\n\n1.  **Usuarios**: Registro, inicio de sesión y consulta de perfiles.\n2.  **Juegos**: Registro de títulos con carátula, año, categoría y plataforma.\n3.  **Plataformas**: Consolas o dispositivos compatibles con los juegos.\n4.  **Categorías**: Géneros como lucha, aventura, estrategia, etc.\n"
+    },
+    "paths": {
+        "/api/auth/login": {
+            "post": {
+                "summary": "Iniciar sesión de usuario",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginInput"
+                            },
+                            "example": {
+                                "email": "ash.ketchum@nintendo.com",
+                                "password": "pikachu123"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Inicio de sesión exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                },
+                                "example": {
+                                    "token": "ey123abc...",
+                                    "user": {
+                                        "id": 1,
+                                        "fullname": "Ash Ketchum",
+                                        "email": "ash.ketchum@nintendo.com"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciales incorrectas"
+                    }
+                }
+            }
+        },
+        "/api/users": {
+            "post": {
+                "summary": "Crear un nuevo usuario",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatosUsuario"
+                            },
+                            "example": {
+                                "fullname": "Ash Ketchum",
+                                "email": "ash.ketchum@nintendo.com",
+                                "password": "pikachu123"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario creado"
+                    }
+                }
+            },
+            "get": {
+                "summary": "Obtener todos los usuarios",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuarios",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Usuario"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/{id}": {
+            "put": {
+                "summary": "Actualizar un usuario existente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatosUsuario"
+                            },
+                            "example": {
+                                "fullname": "Ash Ketchum",
+                                "email": "ash.ketchum@nintendo.com",
+                                "password": "pikachu123"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuario actualizado"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Eliminar un usuario existente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Usuario eliminado"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    }
+                }
+            }
+        },
+        "/api/games": {
+            "post": {
+                "summary": "Crear un nuevo juego",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatosJuego"
+                            },
+                            "example": {
+                                "title": "Super Smash Bros",
+                                "platform_id": 1,
+                                "category_id": 2,
+                                "cover": "smash.jpg",
+                                "year": 2018
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Juego creado"
+                    }
+                }
+            },
+            "get": {
+                "summary": "Obtener todos los juegos",
+                "parameters": [
+                    {
+                        "name": "platform_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de juegos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Juego"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/games/{id}": {
+            "put": {
+                "summary": "Actualizar un juego existente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatosJuego"
+                            },
+                            "example": {
+                                "title": "Super Smash Bros Ultimate",
+                                "platform_id": 1,
+                                "category_id": 2,
+                                "cover": "smash_ultimate.jpg",
+                                "year": 2019
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Juego actualizado"
+                    },
+                    "404": {
+                        "description": "Juego no encontrado"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Eliminar un juego existente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Juego eliminado"
+                    },
+                    "404": {
+                        "description": "Juego no encontrado"
+                    }
+                }
+            }
+        },
+        "/api/platforms": {
+            "post": {
+                "summary": "Crear una nueva plataforma",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatosPlataforma"
+                            },
+                            "example": {
+                                "name": "Nintendo Switch"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Plataforma creada"
+                    }
+                }
+            },
+            "get": {
+                "summary": "Obtener todas las plataformas",
+                "responses": {
+                    "200": {
+                        "description": "Lista de plataformas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Plataforma"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/platforms/{id}": {
+            "put": {
+                "summary": "Actualizar una plataforma existente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatosPlataforma"
+                            },
+                            "example": {
+                                "name": "Nintendo Switch OLED"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Plataforma actualizada"
+                    },
+                    "404": {
+                        "description": "Plataforma no encontrada"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Eliminar una plataforma existente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Plataforma eliminada"
+                    },
+                    "404": {
+                        "description": "Plataforma no encontrada"
+                    }
+                }
+            }
+        },
+        "/api/categories": {
+            "post": {
+                "summary": "Crear una nueva categoría",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatosCategoria"
+                            },
+                            "example": {
+                                "name": "Lucha"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Categoría creada"
+                    }
+                }
+            },
+            "get": {
+                "summary": "Obtener todas las categorías",
+                "responses": {
+                    "200": {
+                        "description": "Lista de categorías",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Categoria"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/categories/{id}": {
+            "put": {
+                "summary": "Actualizar una categoría existente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatosCategoria"
+                            },
+                            "example": {
+                                "name": "Lucha Avanzada"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Categoría actualizada"
+                    },
+                    "404": {
+                        "description": "Categoría no encontrada"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Eliminar una categoría existente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Categoría eliminada"
+                    },
+                    "404": {
+                        "description": "Categoría no encontrada"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "LoginInput": {
+                "title": "Datos de inicio de sesión",
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Correo electrónico del usuario"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "description": "Contraseña"
+                    }
+                }
+            },
+            "LoginResponse": {
+                "title": "Respuesta de inicio de sesión",
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "description": "Token JWT"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/Usuario"
+                    }
+                }
+            },
+            "Usuario": {
+                "title": "Usuario",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "fullname": {
+                        "type": "string",
+                        "description": "Nombre completo"
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "Correo electrónico"
+                    }
+                }
+            },
+            "DatosUsuario": {
+                "title": "Crear nuevo usuario",
+                "type": "object",
+                "required": [
+                    "fullname",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Juego": {
+                "title": "Juego",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Título del juego"
+                    },
+                    "platform_id": {
+                        "type": "integer",
+                        "description": "ID de la plataforma"
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "description": "ID de la categoría"
+                    },
+                    "cover": {
+                        "type": "string",
+                        "description": "Carátula"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "description": "Año de lanzamiento"
+                    }
+                }
+            },
+            "DatosJuego": {
+                "title": "Datos para crear un juego",
+                "type": "object",
+                "required": [
+                    "title",
+                    "platform_id",
+                    "category_id",
+                    "cover",
+                    "year"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "platform_id": {
+                        "type": "integer"
+                    },
+                    "category_id": {
+                        "type": "integer"
+                    },
+                    "cover": {
+                        "type": "string"
+                    },
+                    "year": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "Plataforma": {
+                "title": "Plataforma",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Nombre de la consola o dispositivo"
+                    }
+                }
+            },
+            "DatosPlataforma": {
+                "title": "Crear plataforma",
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Categoria": {
+                "title": "Categoría",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "DatosCategoria": {
+                "title": "Crear categoría",
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

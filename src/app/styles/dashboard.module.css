@@ -1,0 +1,164 @@
+.pageWrapper {
+  min-height: 100vh;
+  background-color: #7c3d3de1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+  color: white;
+}
+
+.topBar {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.titulo {
+  margin-top: 50px;
+  margin-bottom: 45px;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.closeBtn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  color: #7c3d3d;
+  font-size: 1rem;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.addBtn {
+  background-color: #66b069;
+  color: white;
+  width: 100%;
+  max-width: 420px;
+  padding: 1rem;
+  border-radius: 2rem;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: background 0.3s ease;
+}
+
+.addBtn:hover {
+  background-color: #3e9442;
+}
+
+.juegoLista {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.juegoItem {
+  display: flex;
+  align-items: center;
+  background-color: #d8a8a8;
+  padding: 0.8rem 1rem;
+  border-radius: 1rem;
+  color: #4d2a2a;
+  gap: 0.8rem;
+  height: 100px;
+  
+}
+
+.juegoImagen {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #7c3d3d; 
+}
+
+
+.juegoTexto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.plataforma {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #ab6161;
+}
+
+.nombreJuego {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #9a6969;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.iconButton,
+.iconButtonDanger {
+  background-color: #7c3d3d;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.eliminar{
+  background-color: #ca0808;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.iconButton:hover,
+.iconButtonDanger:hover {
+  transform: scale(1.1);
+}
+
+.eliminar:hover
+{
+  transform: scale(1.1);
+}
+
+.loading,
+.error {
+  text-align: center;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
